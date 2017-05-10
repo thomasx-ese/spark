@@ -25,7 +25,7 @@ import scala.collection.JavaConversions.*;
 import java.io.*;
 import java.util.List;
 
-public class FpgaBLAS implements Serializable{
+public class FpgaBLAS implements Serializable {
 
     private ZMQ.Context context = ZMQ.context(1);
     private ZMQ.Socket requester = context.socket(ZMQ.DEALER);
@@ -61,10 +61,15 @@ public class FpgaBLAS implements Serializable{
         matrixGemm.setMatrixB(matrixB.build());
         matrixGemm.setMatrixC(matrixC.build());
 
+        System.out.println("dgemm: Send Request to Server");
         requester.send(matrixGemm.build().toByteArray(), 0);
-
+ 
+        System.out.println("dgemm: Wait reply from server");
         byte[] reply = requester.recv(0);
+        System.out.println("dgemm: Get reply from server");
         Matrix matrixReply = Matrix.parseFrom(reply);
+        System.out.println("dgemm: Matrix Result Row number = " + Integer.toString(matrixReply.getDimensionX()));
+        System.out.println("dgemm: Matrix Result Col number = " + Integer.toString(matrixReply.getDimensionY()));
         java.util.List<java.lang.Double> replyValues = matrixReply.getElementList();
 
         return replyValues;

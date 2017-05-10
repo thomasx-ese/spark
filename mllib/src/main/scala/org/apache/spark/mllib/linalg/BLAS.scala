@@ -366,6 +366,7 @@ private[spark] object BLAS extends Serializable with Logging {
       C: DenseMatrix): Unit = {
     require(!C.isTransposed,
       "The matrix C cannot be the product of a transpose() call. C.isTransposed must be false.")
+    logInfo("gemm: Matrix.Gemm() Execution ")
     if (alpha == 0.0 && beta == 1.0) {
       logDebug("gemm: alpha is equal to 0 and beta is equal to 1. Returning C.")
     } else if (alpha == 0.0) {
@@ -402,19 +403,19 @@ private[spark] object BLAS extends Serializable with Logging {
     require(B.numCols == C.numCols,
       s"The columns of C don't match the columns of B. C: ${C.numCols}, A: ${B.numCols}")
 
-    logDebug("gemm: Use FPGA to calculate GEMM ... begin")
+    logInfo("gemm: Use FPGA to calculate GEMM ... begin")
     logDebug("gemm: FPGA Gemm Parameter Table")
     logDebug("gemm: Matrix A Transpose Information = " + tAstr)
     logDebug("gemm: Matrix A Transpose Information = " + tBstr)
     logDebug("gemm: A.numRows = " + A.numRows + " A.numCols = " + A.numCols)
     logDebug("gemm: B.numRows = " + B.numRows + " B.numCols = " + B.numCols)
-    logDebug("gemm: Parameter Alpha = " + alpha + " Parameter Beta = " + beta)
-    var maValue:String = ""
-    A.values.foreach(a => maValue = maValue + a.toString + " ")
-    var mbValue:String = ""
-    B.values.foreach(b => mbValue = mbValue + b.toString + " ")
-    logDebug("gemm: Matrix A Values =" + maValue)
-    logDebug("gemm: Matrix B Values =" + mbValue)
+    //logDebug("gemm: Parameter Alpha = " + alpha + " Parameter Beta = " + beta)
+    //var maValue:String = ""
+    //A.values.foreach(a => maValue = maValue + a.toString + " ")
+    //var mbValue:String = ""
+    //B.values.foreach(b => mbValue = mbValue + b.toString + " ")
+    //logDebug("gemm: Matrix A Values =" + maValue)
+    //logDebug("gemm: Matrix B Values =" + mbValue)
     
     var Avalues = A.values.map(new java.lang.Double(_)).toBuffer.asJava
     var Bvalues = B.values.map(new java.lang.Double(_)).toBuffer.asJava
@@ -428,7 +429,7 @@ private[spark] object BLAS extends Serializable with Logging {
         C.update(i,j,Cresults.apply(i*B.numCols+j))
       }
     }
-    logDebug("gemm: Use FPGA to calculate GEMM ... end")
+    logInfo("gemm: Use FPGA to calculate GEMM ... end")
 
   }
 
@@ -451,6 +452,8 @@ private[spark] object BLAS extends Serializable with Logging {
     require(mA == C.numRows, s"The rows of C don't match the rows of A. C: ${C.numRows}, A: $mA")
     require(nB == C.numCols,
       s"The columns of C don't match the columns of B. C: ${C.numCols}, A: $nB")
+
+    logInfo("gemm: Use FPGA to calculate GEMM in Sparse Mode ... ")
 
     val Avals = A.values
     val Bvals = B.values

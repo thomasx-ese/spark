@@ -28,13 +28,14 @@ import org.apache.spark.sql.catalyst.expressions.GenericMutableRow
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.catalyst.util.GenericArrayData
 import org.apache.spark.sql.types._
+import org.apache.spark.Logging
 
 /**
  * Trait for a local matrix.
  */
 @SQLUserDefinedType(udt = classOf[MatrixUDT])
 @Since("1.0.0")
-sealed trait Matrix extends Serializable {
+sealed trait Matrix extends Serializable with Logging{
 
   /** Number of rows. */
   @Since("1.0.0")
@@ -83,6 +84,8 @@ sealed trait Matrix extends Serializable {
   @Since("1.2.0")
   def multiply(y: DenseMatrix): DenseMatrix = {
     val C: DenseMatrix = DenseMatrix.zeros(numRows, y.numCols)
+    logInfo("gemm: DenseMatrix.multiply() Execution")
+    println("gemm: DenseMatrix.multiply() Execution")
     BLAS.gemm(1.0, this, y, 0.0, C)
     C
   }
@@ -90,6 +93,8 @@ sealed trait Matrix extends Serializable {
   /** Convenience method for `Matrix`-`DenseVector` multiplication. For binary compatibility. */
   @Since("1.2.0")
   def multiply(y: DenseVector): DenseVector = {
+    logInfo("gemm: DenseMatrix.multiply() matrix*vector")
+    println("gemm: DenseMatrix.multiply() matrix*vector")
     multiply(y.asInstanceOf[Vector])
   }
 
