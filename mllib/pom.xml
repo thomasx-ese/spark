@@ -150,7 +150,13 @@
        <artifactId>protobuf-java</artifactId>
        <version>3.2.0</version>
     </dependency>
-
+    <dependency>
+       <groupId>com.intel.daal</groupId>
+       <artifactId>com.intel</artifactId>
+       <version>1.7.0</version>
+       <scope>system</scope>
+       <systemPath>${project.basedir}/daal.jar</systemPath>
+    </dependency>
   </dependencies>
   <profiles>
     <profile>
